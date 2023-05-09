@@ -10,6 +10,7 @@ class SignupView(APIView):
         '''유저 생성'''
         user = UserSerializer(data=request.data)
         # print(user, request.data)
+        #
         user.is_valid(raise_exception=True)
         user.save()
         return Response({"message":"signup ok"},status=status.HTTP_201_CREATED)
