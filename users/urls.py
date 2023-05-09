@@ -1,8 +1,7 @@
 from django.urls import path
+from users import views
 
 urlpatterns = [
-    # 유저 생성
-    # 유저 조회
-    # 유저 수정
-    # 유저 삭제
+    path('signup/', views.SignupView.as_view()),
+    path('<int:user_id>/', views.UserView.as_view()),
 ]
