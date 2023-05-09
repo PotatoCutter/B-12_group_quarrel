@@ -42,7 +42,6 @@ class UserView(APIView):
         user.is_valid(raise_exception=True)
         user.save()
         return Response({"message":"유저 정보 수정"}, status=status.HTTP_200_OK)
-        pass
     
     def delete(self, request, user_id=None):
         '''유저 삭제'''
@@ -50,7 +49,7 @@ class UserView(APIView):
         if request.user.id == user:
             user.delete(id= user_id )
             return Response({"message":"유저 삭제"}, status=status.HTTP_200_OK)
-            
+        return Response(status=status.HTTP_400_BAD_REQUEST)
         pass
 
 
