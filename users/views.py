@@ -3,8 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
-from .serializer import UserSerializer, FollowSerializer
 from .models import Follow
+from .serializers import UserSerializer, FollowSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
 
 class SignupView(APIView):
     def post(self, request):
@@ -35,14 +38,22 @@ class FollowView(APIView):
             return Response({"message":"Follow complete:D"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    def get(self, request, user_id):
+        follows = Follow.objects.filter(fl_id=user_id)
+        serializer = FollowSerializer(follows, many=True)
+        return Response(serializer.data)   
+    
 class FollowersView(APIView):
     def get(self, request, user_id):
-        followers = Follow.objects.filter(follower_id=user_id)
+        followers = Follow.objects.filter(fw_id=user_id)
         serializer = FollowSerializer(followers, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data)    
 
-class FollowView(APIView):
-    def get(self, request, user_id):
-        follow = Follow.objects.filter(follow_id=user_id)
-        serializer = FollowSerializer(follow, many=True)
-        return Response(serializer.data)   
+class TokenBlacklistView(APIView):
+    '''로그아웃 - refresh token blacklist'''
+    def post(self, request):
+        token = RefreshToken(request.data.get('refresh'))
+        token.blacklist()
+        return Response("Success")
+
+

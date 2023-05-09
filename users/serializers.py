@@ -30,11 +30,9 @@ class FollowUserSerializer(serializers.ModelSerializer):
         fields = ['id','name']
         
 class FollowSerializer(serializers.ModelSerializer):
-    follow = FollowUserSerializer(read_only=True)
+    follows = FollowUserSerializer(read_only=True)
     follower = FollowUserSerializer(read_only=True)
     
     class Meta:
         model = Follow
         fields = "__all__"
-                
-        

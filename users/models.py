@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.core.exceptions import ValidationError
 
 
 class UserManager(BaseUserManager):
@@ -91,10 +92,15 @@ class Follow(models.Model):
     #verbose_name 사용자가 보는 이름
     fl = models.ForeignKey(User,on_delete=models.CASCADE, related_name='follow', verbose_name='팔로우')
     
+  
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['fw','fl'], name='unique_follow')
         ]
+    def clean(self):
+        if self.fw == self.fl:
+            raise ValidationError("자기 자신은 팔로우 할 수 없습니다.")
+    
         
     def __str__(self):
-        return f"{self.fw.name} follows {self.fl.name}"
+        return f"{self.fw.name}님이 {self.fl.name}님을 팔로우하였습니다."
