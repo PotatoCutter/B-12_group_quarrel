@@ -3,17 +3,25 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from articles.models import Article
+from articles.models import Categorys, Article
 from articles.serializers import ArticleSerializer
 
 
 # 카테고리별 메인페이지
 class ArticleListView(APIView):
-    def get(self, ctg_id):
-        pass
-    
-    def post(self, ctg_id, ctt_id):
-        pass
+    def get(self, category_id):
+        article = get_object_or_404(Article, id=category_id)
+        serializer = ArticleSerializer(article, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, category_id):
+        serializer = ArticleSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user, category_id=category_id)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 게시글 상세페이지
@@ -47,13 +55,13 @@ class CommentView(APIView):
         pass
     
 
-# 좋아요 등록/삭제
+# 좋아요 등록, 취소
 class Like(APIView):
     def post(self, ctg_id, ctt_id):
         pass
 
 
-# 북마크 게시글 조회, 등록, 삭제
+# 북마크 게시글 조회, 등록, 취소
 class BookMarkView(APIView):
     def get(self, ctg_id, ctt_id):
         pass
