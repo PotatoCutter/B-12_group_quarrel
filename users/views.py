@@ -6,6 +6,7 @@ from rest_framework import permissions
 from rest_framework.generics import get_object_or_404
 from .serializers import UserSerializer
 from .models import User
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class SignupView(APIView):
     def post(self, request):
@@ -50,3 +51,12 @@ class UserView(APIView):
             user.delete(id= user_id )
             return Response({"message":"유저 삭제"}, status=status.HTTP_200_OK)
             
+        pass
+
+
+class TokenBlacklistView(APIView):
+    '''로그아웃 - refresh token blacklist'''
+    def post(self, request):
+        token = RefreshToken(request.data.get('refresh'))
+        token.blacklist()
+        return Response("Success")
