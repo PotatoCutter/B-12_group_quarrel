@@ -9,9 +9,9 @@ from articles.serializers import ArticleSerializer
 
 # 카테고리별 메인페이지
 class ArticleListView(APIView):
-    def get(self, category_id):
-        article = get_object_or_404(Article, id=category_id)
-        serializer = ArticleSerializer(article, many=True)
+    def get(self, request, category_id):
+        articles = Article.objects.filter(category_id=category_id)
+        serializer = ArticleSerializer(articles, many=True)
         return Response(serializer.data)
 
     def post(self, request, category_id):
@@ -26,10 +26,11 @@ class ArticleListView(APIView):
 
 # 게시글 상세페이지
 class ArticleDetailView(APIView):
-    def get(self, ctt_id):
-        article = get_object_or_404(Article, id=ctt_id)
+    def get(self, article_id):
+        article = get_object_or_404(Article, id=article_id)
         serializer = ArticleSerializer(article)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
     
     # 게시글 수정하기
     def put() :
