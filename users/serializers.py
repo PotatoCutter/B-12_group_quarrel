@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -14,6 +15,10 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        # passwords = request.data.pop('password')
+        # user = User(**request.data)
+        # user.set_password(passwords)
+        # user.save()
         user = super().create(validated_data)
         user.age = 0
         password = user.password
@@ -21,6 +26,17 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+class BTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["name"] = user.name
+        token["email"] = user.email
+        token["gender"] = user.gender
+        token["age"] = user.age
+        token["date_of_birth"] = user.date_of_birth
+        
+        return token
     # def update(self, instance, validated_data):
     #     instance.name = validated_data.get("name", instance.name)
     #     instance.date_of_birth = validated_data.get(
