@@ -59,9 +59,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
     "corsheaders",
     "users",
+    "articles",
 ]
 
 REST_FRAMEWORK = {
@@ -87,7 +88,9 @@ ROOT_URLCONF = 'conf.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+                "temlplates"
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
