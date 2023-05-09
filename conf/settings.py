@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt'
     "corsheaders",
     "users",
+    "articles",
 ]
 
 REST_FRAMEWORK = {
