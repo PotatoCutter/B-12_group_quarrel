@@ -38,7 +38,3 @@ class FollowSerializer(serializers.ModelSerializer):
         fields = "__all__"
                 
         
-# class FollowerSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Follower
-#         fields = ['id', 'fw']
