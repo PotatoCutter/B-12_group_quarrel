@@ -1,6 +1,4 @@
 from django.db import models
-
-from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
@@ -83,3 +81,18 @@ class User(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+
+class Follow(models.Model):
+    """
+    사용자 간의 팔로우/팔로워 관계를 나타내기 위한 모델.
+    """
+    fw = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower', verbose_name='팔로워', null=True)
+    #verbose_name 사용자가 보는 이름
+    fl = models.ForeignKey(User,on_delete=models.CASCADE, related_name='follow', verbose_name='팔로우')
+    
+    class Meta:
+        unique_together = ['fw', 'fl']
+        
+    def __str__(self):
+        return f"{self.fw.name} follows {self.fl.name}"

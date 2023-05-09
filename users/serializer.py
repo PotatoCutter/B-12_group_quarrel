@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Follow
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,3 +23,22 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+class FollowUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','name']
+        
+class FollowSerializer(serializers.ModelSerializer):
+    follow = FollowUserSerializer(read_only=True)
+    follower = FollowUserSerializer(read_only=True)
+    
+    class Meta:
+        model = Follow
+        fields = "__all__"
+                
+        
+# class FollowerSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Follower
+#         fields = ['id', 'fw']
