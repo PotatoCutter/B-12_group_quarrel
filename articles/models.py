@@ -37,6 +37,7 @@ class Comment(models.Model):
 
 # 게시글 좋아요
 class Likes(models.Model):
+    likes = models.ManyToManyField(User, related_name="like_articles")
     pass
 
 
