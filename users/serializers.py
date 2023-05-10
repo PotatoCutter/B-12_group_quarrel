@@ -12,19 +12,21 @@ class UserSerializer(serializers.ModelSerializer):
             "password": {
                 "write_only": True,
             },
+            "is_active": {
+                "write_only": True,
+            },
+            "is_admin": {
+                "write_only": True,
+            },
         }
 
     def create(self, validated_data):
-        # passwords = request.data.pop('password')
-        # user = User(**request.data)
-        # user.set_password(passwords)
-        # user.save()
         user = super().create(validated_data)
         user.age = 0
         password = user.password
         user.set_password(password)
         user.save()
-        return user=
+        return user
 
 class FollowUserSerializer(serializers.ModelSerializer):
     name = serializers.CharField()  # name 필드를 직렬화
@@ -56,4 +58,4 @@ class BTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["age"] = user.age
         token["date_of_birth"] = user.date_of_birth
         
-        return token=
+        return token
