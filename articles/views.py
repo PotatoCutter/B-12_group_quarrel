@@ -36,10 +36,10 @@ class ArticleDetailView(APIView):
     def put(self, request, article_id) :
         article = get_object_or_404(Article, id=article_id)
         if request.user == article.user :
-            serializer = ArticleSerializer(article, data=request.data)
+            serializer = ArticleCreateSerializer(article, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message":"수정이 되었습니다."}, serializer.data, status=status.HTTP_200_OK)
+                return Response({"message":"수정이 되었습니다."}, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
