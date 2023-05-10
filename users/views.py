@@ -7,9 +7,6 @@ from rest_framework.generics import get_object_or_404
 from .serializers import UserSerializer
 from .models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-# 세션기반 로그인용
-from django.contrib.auth import login, get_user_model
-from django.contrib import auth
 
 
 # 회원가입

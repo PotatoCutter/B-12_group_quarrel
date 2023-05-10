@@ -33,10 +33,10 @@ class ArticleDetailView(APIView):
     
     
     # 게시글 수정하기
-    def put(self, request, ctt_id) :
-        ctt = get_object_or_404(Article, id=ctt_id)
-        if request.user == ctt.user :
-            serializer = ArticleSerializer(ctt, data=request.data)
+    def put(self, request, article_id) :
+        article = get_object_or_404(Article, id=article_id)
+        if request.user == article.user :
+            serializer = ArticleSerializer(article, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -46,10 +46,10 @@ class ArticleDetailView(APIView):
             return Response({"message":"권한이 없습니다."},status=status.HTTP_403_FORBIDDEN)
 
     # 게시글 삭제하기
-    def delete(self, request, ctt_id) :
-        ctt = get_object_or_404(Article, id=ctt_id)
-        if request.user == ctt.user :
-            ctt.delete()
+    def delete(self, request, article_id) :
+        article = get_object_or_404(Article, id=article_id)
+        if request.user == article.user :
+            article.delete()
             return Response({"message":"삭제가 되었습니다."},status=status.HTTP_204_NO_CONTENT)
         else :
             return Response({"message":"권한이 없습니다."},status=status.HTTP_403_FORBIDDEN)
