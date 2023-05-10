@@ -48,8 +48,10 @@ class User(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
+    # 타임존 연/월/일 
     name = models.CharField("사용자 이름",max_length=50)
     date_of_birth = models.DateField("생일",null=True)
+    age = models.IntegerField("나이",null=True, default=0)
     gender = models.CharField("성별", max_length= 5, choices=GENDER_CHOICES, default="unknown")
     profile_photo = models.ImageField("프로필 사진",null=True,blank=True)
     subscript = models.TextField("자기소개",blank=True,null=True)

@@ -4,6 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 urlpatterns = [
     path('signup/', views.SignupView.as_view()),
+    path('', views.UserView.as_view()),
     path('<int:user_id>/', views.UserView.as_view()),
     path('follow/', views.FollowView.as_view(), name='following'),
     path('followers/<int:user_id>/', views.FollowersView.as_view(), name='followers'),
