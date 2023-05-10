@@ -471,6 +471,9 @@ $RECYCLE.BIN/
 # django secret key
 key.json
 
+# emil settings
+email.json
+
 **/migrations/**_initial.py
 **/migrations/**_
 
