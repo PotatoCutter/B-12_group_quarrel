@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from articles.models import Categorys, Article, Comment
+from articles.models import Categorys, Article, Comment, ArticleLikes, CommentLikes
 from articles.serializers import ArticleSerializer, ArticleCreateSerializer, CommentCreateSerializer, CommentSerializer
 
 
@@ -77,6 +77,7 @@ class CommentView(APIView):
     
 # 댓글 수정, 삭제
 class CommentDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     
     # 댓글 수정
     def put(self, request, article_id, comment_id):
@@ -101,10 +102,30 @@ class CommentDetailView(APIView):
             return Response({"message":"권한이 없습니다"},status=status.HTTP_400_BAD_REQUEST)
     
 
-# 좋아요 등록, 취소
-class Like(APIView):
-    def post(self, category_id, article_id):
-        pass
+# 게시글 좋아요 등록, 취소 / 404 오류
+class ArticleLikes(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        if request.user in article.user.all():
+            article.likes.remove(request.user)
+            return Response({"message":"좋아요를 취소했습니다"}, status=status.HTTP_200_OK)
+        else:
+            article.likes.add(request.user)
+            return Response({"message":"좋아요를 눌렀습니다"}, status=status.HTTP_200_OK)
+
+
+# 댓글 좋아요 등록, 취소 / 404 오류
+class CommentLikes(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, article_id, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        if request.user in comment.user.all():
+            comment.likes.remove(request.user)
+            return Response({"message":"좋아요를 취소했습니다"}, status=status.HTTP_200_OK)
+        else:
+            comment.likes.add(request.user)
+            return Response({"message":"좋아요를 눌렀습니다"}, status=status.HTTP_200_OK)
 
 
 # 북마크 게시글 조회, 등록, 취소
@@ -118,5 +139,8 @@ class BookMarkView(APIView):
 
 # 내가 쓴 게시글 조회
 class ArticleUserView(APIView):
-    def get(self, user_id):
-        pass
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, user_id):
+        articles = Article.objects.filter(user_id=user_id)
+        serializer = ArticleSerializer(articles, many=True)
+        return Response(serializer.data)
