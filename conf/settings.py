@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     "corsheaders",
     "users",
+    "articles",
 ]
 
 REST_FRAMEWORK = {
@@ -88,7 +89,9 @@ ROOT_URLCONF = 'conf.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+                "temlplates"
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -200,6 +203,5 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
-
 
 AUTH_USER_MODEL = "users.User"
