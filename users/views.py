@@ -7,6 +7,22 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework.decorators import permission_classes
 from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
+
+class Test(APIView):
+    def post(self,request):
+        EmailMessage(
+            # 제목
+            "subject",        
+            # 이메일 내용
+            "content",
+            # 보내는 사람
+            "luckguy@B18.com",
+            # 받는 사람
+            ["insert@email.me"],
+        ).send()
+        return Response(status=status.HTTP_200_OK)
 
 #______ user CRUD ________
 class SignupView(APIView):
@@ -24,7 +40,6 @@ class UserView(APIView):
         '''유저 조회'''
         user = User.objects.get(id=user_id)
         serial = UserSerializer(user)
-        print(user)
         return Response(serial.data)
     
     def put(self, request, user_id=None):

@@ -21,10 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        # passwords = request.data.pop('password')
-        # user = User(**request.data)
-        # user.set_password(passwords)
-        # user.save()
         user = super().create(validated_data)
         user.age = 0
         password = user.password
