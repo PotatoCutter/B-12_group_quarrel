@@ -3,13 +3,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
+from .models import Follow, User
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated 
 from rest_framework.decorators import permission_classes
 from .serializers import UserSerializer
 from .models import User
+from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
+#______ user CRUD ________
 class SignupView(APIView):
     def post(self, request):
         '''유저 생성'''
@@ -53,7 +56,34 @@ class UserView(APIView):
             return Response({"message":"유저 삭제"}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+#________ user end of code __________
 
+#________ follow ____________________
+
+class FollowView(APIView):
+    def post(self, request):
+        serializer = FollowSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message":"Follow complete:D"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, user_id):
+        follows = Follow.objects.filter(fl_id=user_id)
+        serializer = FollowViewSerializer(follows, many=True)
+        return Response(serializer.data)
+    
+    def delete():
+        '''팔로우 삭제'''
+        pass
+    
+class FollowersView(APIView):
+    def get(self, request, user_id):
+        followers = Follow.objects.filter(fw_id=user_id)
+        serializer = FollowViewSerializer(followers, many=True)
+        return Response(serializer.data)    
+#________ btoken __________________
+      
 class TokenBlacklistView(APIView):
     '''로그아웃 - refresh token blacklist'''
     def post(self, request):
