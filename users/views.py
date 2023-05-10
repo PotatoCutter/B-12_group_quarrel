@@ -8,8 +8,7 @@ from rest_framework.generics import get_object_or_404
 from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
-
+#______ user CRUD ________
 class SignupView(APIView):
     def post(self, request):
         '''유저 생성'''
@@ -19,7 +18,7 @@ class SignupView(APIView):
         user.is_valid(raise_exception=True)
         user.save()
         return Response({"message":"signup ok"},status=status.HTTP_201_CREATED)
-    
+
 class UserView(APIView):
     def get(self, request, user_id=None):
         '''유저 조회'''
@@ -53,6 +52,10 @@ class UserView(APIView):
             return Response({"message":"유저 삭제"}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
         pass
+      
+#________ user end of code __________
+
+#________ follow ____________________
 
 class FollowView(APIView):
     def post(self, request):
@@ -82,7 +85,8 @@ class FollowersView(APIView):
         followers = Follow.objects.filter(fl_id=user_id)
         serializer = FollowViewSerializer(followers, many=True)
         return Response(serializer.data)    
-
+#________ btoken __________________
+      
 class TokenBlacklistView(APIView):
     '''로그아웃 - refresh token blacklist'''
     def post(self, request):
