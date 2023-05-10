@@ -24,27 +24,33 @@ class UserSerializer(serializers.ModelSerializer):
         password = user.password
         user.set_password(password)
         user.save()
-        return user=
+        return user
 
-class FollowUserSerializer(serializers.ModelSerializer):
-    name = serializers.CharField()  # name 필드를 직렬화
-    class Meta:
-        model = User
-        fields = ['name']
-        
 class FollowViewSerializer(serializers.ModelSerializer):
-    follow = serializers.CharField(source='fl.name', read_only=True)
-    follower = serializers.CharField(source='fw.name', read_only=True)
+    follow = serializers.CharField(source='fw.name', read_only=True)
+    follower = serializers.CharField(source='fl.name', read_only=True)
     
     class Meta:
         model = Follow
         fields =['follow','follower']
-        # exclude = ['id']    # name값만 나오게 하기
 
 class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = '__all__'
+     #자기자신 팔로우 안되도록 check   
+    def check(self, following):
+        fw = following.get('fw')
+        fl = following.get('fl')
+        
+        if fw == fl:
+            raise serializers.ValidationError("자기 자신은 팔로우할 수 없습니다")
+        
+        return following
+    #check 실행
+    def validate(self, data):
+        data = super().validate(data)
+        return self.check(data)
 
 class BTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -56,4 +62,4 @@ class BTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["age"] = user.age
         token["date_of_birth"] = user.date_of_birth
         
-        return token=
+        return token
