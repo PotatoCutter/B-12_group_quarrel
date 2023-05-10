@@ -6,7 +6,6 @@ from rest_framework.generics import get_object_or_404
 from articles.models import Categorys, Article
 from articles.serializers import ArticleSerializer, ArticleCreateSerializer
 
-
 # 카테고리별 메인페이지
 class ArticleListView(APIView):
     def get(self, request, category_id):
@@ -26,11 +25,10 @@ class ArticleListView(APIView):
 
 # 게시글 상세페이지
 class ArticleDetailView(APIView):
-    def get(self, article_id):
+    def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         serializer = ArticleSerializer(article)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
     
     # 게시글 수정하기
     def put(self, request, article_id) :
@@ -39,16 +37,16 @@ class ArticleDetailView(APIView):
             serializer = ArticleSerializer(article, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response({"message":"수정 완료되었습니다."}, serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"message":"권한이 없습니다."},status=status.HTTP_403_FORBIDDEN)
 
     # 게시글 삭제하기
-    def delete(self, request, article_id) :
+    def delete(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
-        if request.user == article.user :
+        if request.user == article.user:
             article.delete()
             return Response({"message":"삭제가 되었습니다."},status=status.HTTP_204_NO_CONTENT)
         else :
