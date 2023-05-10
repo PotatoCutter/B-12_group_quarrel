@@ -12,6 +12,12 @@ class UserSerializer(serializers.ModelSerializer):
             "password": {
                 "write_only": True,
             },
+            "is_active": {
+                "write_only": True,
+            },
+            "is_admin": {
+                "write_only": True,
+            },
         }
 
     def create(self, validated_data):

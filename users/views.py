@@ -1,14 +1,10 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import permissions
 from .models import Follow, User
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated 
 from rest_framework.decorators import permission_classes
-from .serializers import UserSerializer
-from .models import User
 from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -40,11 +36,12 @@ class UserView(APIView):
         
         # id 있을때
         if user_id:
-            user = User.objects.get(id= user_id)
-            serial = UserSerializer(user, request.data)
-            if serial.is_valid(raise_exception=True):
-                serial.save()
-                return Response(serial.data, status=status.HTTP_200_OK)
+            user = get_object_or_404(User, id=user_id)
+            if request.user == user:
+                serial = UserSerializer(user, request.data)
+                if serial.is_valid(raise_exception=True):
+                    serial.save()
+                    return Response(serial.data, status=status.HTTP_200_OK)
         # id 없을때
         return Response( status=status.HTTP_403_FORBIDDEN)
     
@@ -59,7 +56,6 @@ class UserView(APIView):
 #________ user end of code __________
 
 #________ follow ____________________
-
 class FollowView(APIView):
     def post(self, request):
         serializer = FollowSerializer(data=request.data)

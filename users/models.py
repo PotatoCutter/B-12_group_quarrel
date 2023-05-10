@@ -53,7 +53,7 @@ class User(AbstractBaseUser):
     date_of_birth = models.DateField("생일",null=True)
     age = models.IntegerField("나이",null=True, default=0)
     gender = models.CharField("성별", max_length= 5, choices=GENDER_CHOICES, default="unknown")
-    profile_photo = models.ImageField("프로필 사진",null=True,blank=True)
+    profile_photo = models.ImageField("프로필 사진",null=True,blank=True, upload_to=str(email))
     subscript = models.TextField("자기소개",blank=True,null=True)
     
     created = models.DateTimeField("가입 날짜",auto_now_add=True)
