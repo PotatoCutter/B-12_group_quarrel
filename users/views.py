@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
 from .models import Follow
-from .serializers import UserSerializer, FollowSerializer
+from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -40,13 +40,17 @@ class FollowView(APIView):
     
     def get(self, request, user_id):
         follows = Follow.objects.filter(fl_id=user_id)
-        serializer = FollowSerializer(follows, many=True)
-        return Response(serializer.data)   
+        serializer = FollowViewSerializer(follows, many=True)
+        return Response(serializer.data)
+    
+    def delete():
+        '''팔로우 삭제'''
+        pass
     
 class FollowersView(APIView):
     def get(self, request, user_id):
         followers = Follow.objects.filter(fw_id=user_id)
-        serializer = FollowSerializer(followers, many=True)
+        serializer = FollowViewSerializer(followers, many=True)
         return Response(serializer.data)    
 
 class TokenBlacklistView(APIView):

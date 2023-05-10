@@ -25,14 +25,22 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class FollowUserSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()  # name 필드를 직렬화
     class Meta:
         model = User
-        fields = ['id','name']
+        fields = ['name']
         
-class FollowSerializer(serializers.ModelSerializer):
-    follows = FollowUserSerializer(read_only=True)
-    follower = FollowUserSerializer(read_only=True)
+class FollowViewSerializer(serializers.ModelSerializer):
+    follow = serializers.CharField(source='fl.name', read_only=True)
+    follower = serializers.CharField(source='fw.name', read_only=True)
     
     class Meta:
         model = Follow
-        fields = "__all__"
+        fields =['follow','follower']
+        # exclude = ['id']    # name값만 나오게 하기
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = '__all__'
+

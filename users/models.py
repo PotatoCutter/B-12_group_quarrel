@@ -103,4 +103,4 @@ class Follow(models.Model):
     
         
     def __str__(self):
-        return f"{self.fw.name}님이 {self.fl.name}님을 팔로우하였습니다."
+        return f"{self.fw.name}님이 {self.fl.name}님을 팔로우하고 있습니다."
