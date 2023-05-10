@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         password = user.password
         user.set_password(password)
         user.save()
-        return user=
+        return user
 
 class FollowUserSerializer(serializers.ModelSerializer):
     name = serializers.CharField()  # name 필드를 직렬화
@@ -56,4 +56,4 @@ class BTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["age"] = user.age
         token["date_of_birth"] = user.date_of_birth
         
-        return token=
+        return token
