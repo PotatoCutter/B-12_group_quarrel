@@ -425,7 +425,7 @@ pip-selfcheck.json
 
 ### VisualStudioCode ###
 .vscode/*
-!.vscode/settings.json
+.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -472,3 +472,4 @@ $RECYCLE.BIN/
 key.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,venv,windows,macos,visualstudiocode,pycharm,django
+**/migrations/**_initial.py
