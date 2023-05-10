@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from articles.models import Categorys, Article, Comment, ArticleLikes, CommentLikes
-from articles.serializers import ArticleSerializer, ArticleCreateSerializer, CommentCreateSerializer, CommentSerializer
+from articles.models import Categorys, Article, Comment, ArticleLikes, CommentLikes, Bookmark
+from articles.serializers import ArticleSerializer, ArticleCreateSerializer, CommentCreateSerializer, CommentSerializer, BookmarkSerializer
 
 
 # 카테고리별 메인페이지
@@ -130,12 +130,20 @@ class CommentLikes(APIView):
 
 # 북마크 게시글 조회, 등록, 취소
 class BookMarkView(APIView):
-    def get(self, category_id, article_id):
-        pass
-    
-    def post(self, category_id, article_id):
-        pass
+    def post(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        try:
+            bookmark = Bookmark.objects.get(article=article, user=request.user)
+            bookmark.delete()
+            return Response("북마크를 취소했습니다.", status=status.HTTP_200_OK)
+        except Bookmark.DoesNotExist:
+            bookmark = Bookmark.objects.create(article=article, user=request.user)
+            return Response("북마크를 추가하였습니다.", status=status.HTTP_200_OK)
 
+    def get(self, request, user_id):
+        bookmark = Bookmark.objects.filter(user_id=user_id)
+        serializer = BookmarkSerializer(bookmark, many=True)
+        return Response(serializer.data)        
 
 # 내가 쓴 게시글 조회
 class ArticleUserView(APIView):

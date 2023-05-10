@@ -51,4 +51,5 @@ class CommentLikes(models.Model):
     
 # 북마크 조회
 class Bookmark(models.Model):
-    pass
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name="제목")    
