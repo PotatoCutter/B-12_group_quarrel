@@ -37,7 +37,7 @@ class ArticleDetailView(APIView):
             serializer = ArticleSerializer(article, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message":"수정 완료되었습니다."}, serializer.data, status=status.HTTP_200_OK)
+                return Response({"message":"수정이 되었습니다."}, serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
