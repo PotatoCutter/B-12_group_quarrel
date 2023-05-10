@@ -36,11 +36,12 @@ class UserView(APIView):
         
         # id 있을때
         if user_id:
-            user = User.objects.get(id= user_id)
-            serial = UserSerializer(user, request.data)
-            if serial.is_valid(raise_exception=True):
-                serial.save()
-                return Response(serial.data, status=status.HTTP_200_OK)
+            user = get_object_or_404(User, id=user_id)
+            if request.user == user:
+                serial = UserSerializer(user, request.data)
+                if serial.is_valid(raise_exception=True):
+                    serial.save()
+                    return Response(serial.data, status=status.HTTP_200_OK)
         # id 없을때
         return Response( status=status.HTTP_403_FORBIDDEN)
     
