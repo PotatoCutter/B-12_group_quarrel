@@ -471,5 +471,9 @@ $RECYCLE.BIN/
 # django secret key
 key.json
 
-# End of https://www.toptal.com/developers/gitignore/api/python,venv,windows,macos,visualstudiocode,pycharm,django
 **/migrations/**_initial.py
+**/migrations/**_
+
+!**/migrations/_init_.py
+# End of https://www.toptal.com/developers/gitignore/api/python,venv,windows,macos,visualstudiocode,pycharm,django
+
