@@ -8,6 +8,8 @@ from .serializers import UserSerializer
 from .models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
+# 회원가입
 class SignupView(APIView):
     def post(self, request):
         '''유저 생성'''
@@ -18,6 +20,21 @@ class SignupView(APIView):
         user.save()
         return Response({"message":"signup ok"},status=status.HTTP_201_CREATED)
     
+
+# 로그인
+class Login(APIView):
+    def post(self, request):
+        email = request.data.get('email', '')
+        password = request.data.get('password', '')
+        user = auth.authenticate(request, email=email, password=password)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            login(request, user)
+            return Response({"msg": "Login 완료"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "email 또는 password가 틀렸거나 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+
 class UserView(APIView):
     def get(self, request, user_id=None):
         '''유저 조회'''
