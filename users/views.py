@@ -3,13 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
+from .models import Follow, User
 from rest_framework.generics import get_object_or_404
-from .serializers import UserSerializer
-from .models import User
+from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
-# 회원가입
+#______ user CRUD ________
 class SignupView(APIView):
     def post(self, request):
         '''유저 생성'''
@@ -19,21 +18,6 @@ class SignupView(APIView):
         user.is_valid(raise_exception=True)
         user.save()
         return Response({"message":"signup ok"},status=status.HTTP_201_CREATED)
-    
-
-# 로그인
-class Login(APIView):
-    def post(self, request):
-        email = request.data.get('email', '')
-        password = request.data.get('password', '')
-        user = auth.authenticate(request, email=email, password=password)
-        serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            login(request, user)
-            return Response({"msg": "Login 완료"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "email 또는 password가 틀렸거나 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
-
 
 class UserView(APIView):
     def get(self, request, user_id=None):
@@ -68,8 +52,35 @@ class UserView(APIView):
             return Response({"message":"유저 삭제"}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
         pass
+      
+#________ user end of code __________
 
+#________ follow ____________________
 
+class FollowView(APIView):
+    def post(self, request):
+        serializer = FollowSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message":"Follow complete:D"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, user_id):
+        follows = Follow.objects.filter(fl_id=user_id)
+        serializer = FollowViewSerializer(follows, many=True)
+        return Response(serializer.data)
+    
+    def delete():
+        '''팔로우 삭제'''
+        pass
+    
+class FollowersView(APIView):
+    def get(self, request, user_id):
+        followers = Follow.objects.filter(fw_id=user_id)
+        serializer = FollowViewSerializer(followers, many=True)
+        return Response(serializer.data)    
+#________ btoken __________________
+      
 class TokenBlacklistView(APIView):
     '''로그아웃 - refresh token blacklist'''
     def post(self, request):
