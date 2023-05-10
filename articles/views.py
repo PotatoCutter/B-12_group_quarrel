@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from articles.models import Categorys, Article
-from articles.serializers import ArticleSerializer, ArticleCreateSerializer
+from articles.models import Categorys, Article, Comment
+from articles.serializers import ArticleSerializer, ArticleCreateSerializer, CommentCreateSerializer, CommentSerializer
 
 
 # 카테고리별 메인페이지
