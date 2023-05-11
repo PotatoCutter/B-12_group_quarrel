@@ -228,7 +228,8 @@ def get_secret(setting, secrets=hpass):
         raise ImproperlyConfigured(error_msg)
 
 # 이메일 계정 세팅
-EMAIL_HOST_USER = 'b12quarrel@gmail.com'    # 보내는 이메일 계정
+
+EMAIL_HOST_USER = get_secret('HOSTID')    # 보내는 이메일 계정
 EMAIL_HOST_PASSWORD =  get_secret('HOSTPASS')  # 보내는 이메일 계정의 호스트 패스워드
 EMAIL_USE_TLS = True                        # 서버 전송을 위한 보안설정 587 포트에서 사용됨
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER        # 기본 이메일 호스트 계정 설정

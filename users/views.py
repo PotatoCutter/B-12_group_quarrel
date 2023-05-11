@@ -29,8 +29,11 @@ class EmailCert(APIView):
     def post(self,request):
         '''이메일 인증'''
         try:
+            # 사용자의 req 의 email을 가져와 user의 email 비교 객체를 가져옴
             user = User.objects.get(email=request.data['email'])
+            # user객체의 코드와 사용자의 req의 코드를 비교
             if user.create_code == request.data['code']:
+                # 해당 사용자의 user를 활성화
                 user.is_active = True
                 user.save()
                 return Response({"message":"이메일 인증"},status=status.HTTP_200_OK)
