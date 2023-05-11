@@ -1,11 +1,14 @@
+from random import randint,choice
+import random
+import string
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Follow, User
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated 
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.decorators import permission_classes
-from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer 
+from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer, UserForgotPasswordSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.mail import EmailMessage
 
@@ -40,6 +43,59 @@ class EmailCert(APIView):
                 
         except:
             return Response({"message":"이메일 인증 실패"},status=status.HTTP_400_BAD_REQUEST)
+
+class RegenerationCert(APIView):
+    def post(self,request):
+        '''재생성 인증번호 발송'''
+        user = User.objects.get(email=request.data['email'])
+        user.create_code = str(randint(1,999999)).zfill(6)
+        user.save()
+        
+        # 변경된 인증 메일 전송
+        EmailMessage(
+            # 제목
+            "시비시비 커뮤니티 회원인증",        
+            # 이메일 내용
+            user.create_code,
+            # 보내는 사람
+            "luckguy@B18.com",
+            # 받는 사람
+            [request.data['email']],
+        ).send()
+        
+        return Response(status=status.HTTP_200_OK)
+        
+class ForgotPassword(APIView):
+    def post(self, request):
+        '''Forgot password'''
+        try:
+            # 사용자의 req 의 email을 가져와 user의 email 비교 객체를 가져옴
+            user = User.objects.get(email=request.data['email'])
+            print(user, user.create_code, request.data['email'],request.data['code'])
+            # user객체의 코드와 사용자의 req의 코드를 비교
+            if user.create_code == request.data['code']:
+                user.create_code = user.create_code = str(randint(1,999999)).zfill(6)
+                serial = UserForgotPasswordSerializer().password_reset(user)
+                
+                EmailMessage(
+                    # 제목
+                    "시비시비 커뮤니티 새 비밀번호",        
+                    # 이메일 내용
+                    serial.password,
+                    # 보내는 사람
+                    "luckguy@B18.com",
+                    # 받는 사람
+                    [request.data['email']]
+                ).send()
+                
+                serial.set_password(serial.password)
+                serial.save()
+                
+                return Response({"message":"비밀번호 변경 성공"},status=status.HTTP_200_OK)
+                
+        except:
+            return Response({"message":"이메일 인증 실패"},status=status.HTTP_400_BAD_REQUEST)
+
 
 #______ user CRUD ________
 class SignupView(APIView):
@@ -90,7 +146,9 @@ class UserView(APIView):
 #________ follow ____________________
 class FollowView(APIView):
     def post(self, request):
-        serializer = FollowSerializer(data=request.data)
+        follower = request.user # 현재 로그인한 유저
+        follow_data = {'fl': follower.id, 'fw': request.data.get('fw')}
+        serializer = FollowSerializer(data=follow_data)
         if serializer.is_valid():
             serializer.save()
             return Response({"message":"Follow complete:D"}, status=status.HTTP_201_CREATED)
@@ -101,9 +159,16 @@ class FollowView(APIView):
         serializer = FollowViewSerializer(follows, many=True)
         return Response(serializer.data)
     
-    def delete():
-        '''팔로우 삭제'''
-        pass
+    def delete(self, request, user_id):
+        follower_id = request.user.id  # 현재 로그인한 사용자의 ID
+        try:
+            follow = Follow.objects.get(fl_id=follower_id, fw_id=user_id)
+            follow.delete()
+            return Response({"message": "Unfollowed successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except Follow.DoesNotExist:
+            pass
+        return Response({"message":"Follow does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
     
 class FollowersView(APIView):
     def get(self, request, user_id):
@@ -118,3 +183,4 @@ class TokenBlacklistView(APIView):
         token = RefreshToken(request.data.get('refresh'))
         token.blacklist()
         return Response("Success")
+    

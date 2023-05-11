@@ -1,4 +1,6 @@
 from random import randint
+import random
+import string
 from rest_framework import serializers
 from .models import User, Follow
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -30,26 +32,49 @@ class UserSerializer(serializers.ModelSerializer):
         user.create_code = str(randint(1,999999)).zfill(6)
         user.save()
         return user
+        
 
-class FollowUserSerializer(serializers.ModelSerializer):
-    name = serializers.CharField()  # name 필드를 직렬화
+class UserForgotPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['name']
+        fields = ('password',)
         
+    def password_reset(self,instance):
+        temp_pass = ""
+        temp_pass_pool = string.ascii_letters + string.digits + string.punctuation
+        for i in range(16):
+            temp_pass += random.choice(temp_pass_pool)
+        
+        instance.password = temp_pass
+        # instance.set_password(temp_pass)
+        instance.save()
+        return instance
+
 class FollowViewSerializer(serializers.ModelSerializer):
-    follow = serializers.CharField(source='fl.name', read_only=True)
-    follower = serializers.CharField(source='fw.name', read_only=True)
+    follow = serializers.CharField(source='fw.name', read_only=True)
+    follower = serializers.CharField(source='fl.name', read_only=True)
     
     class Meta:
         model = Follow
         fields =['follow','follower']
-        # exclude = ['id']    # name값만 나오게 하기
 
 class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = '__all__'
+     #자기자신 팔로우 안되도록 check   
+    def check(self, following):
+        fw = following.get('fw')
+        fl = following.get('fl')
+        
+        if fw == fl:
+            raise serializers.ValidationError("자기 자신은 팔로우할 수 없습니다")
+        
+        return following
+    #check 실행
+    def validate(self, data):
+        data = super().validate(data)
+        return self.check(data)
 
 class BTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
