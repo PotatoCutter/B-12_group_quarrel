@@ -1,4 +1,6 @@
 from random import randint
+import random
+import string
 from rest_framework import serializers
 from .models import User, Follow
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -30,6 +32,23 @@ class UserSerializer(serializers.ModelSerializer):
         user.create_code = str(randint(1,999999)).zfill(6)
         user.save()
         return user
+        
+
+class UserForgotPasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('password',)
+        
+    def password_reset(self,instance):
+        temp_pass = ""
+        temp_pass_pool = string.ascii_letters + string.digits + string.punctuation
+        for i in range(16):
+            temp_pass += random.choice(temp_pass_pool)
+        
+        instance.password = temp_pass
+        # instance.set_password(temp_pass)
+        instance.save()
+        return instance
 
 class FollowUserSerializer(serializers.ModelSerializer):
     name = serializers.CharField()  # name 필드를 직렬화
