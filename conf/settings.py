@@ -227,9 +227,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'   # 이메일 전�
 EMAIL_HOST = "smtp.gmail.com"   # 이메일 호스트 주소
 EMAIL_PORT = 587                # 이메일 포트번호
 
-
 # 이메일 계정 세팅
-
 EMAIL_HOST_USER = get_secret('HOSTID')    # 보내는 이메일 계정
 EMAIL_HOST_PASSWORD =  get_secret('HOSTPASS')  # 보내는 이메일 계정의 호스트 패스워드
 EMAIL_USE_TLS = True                        # 서버 전송을 위한 보안설정 587 포트에서 사용됨
