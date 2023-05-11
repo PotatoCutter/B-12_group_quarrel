@@ -12,21 +12,6 @@ from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer,
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.mail import EmailMessage
 
-class Email(APIView):
-    def post(self,request):
-        '''인증메일 전송'''
-        code = User.objects.get(email=request.data['email'])
-        EmailMessage(
-            # 제목
-            "시비시비 커뮤니티 회원인증",        
-            # 이메일 내용
-            code.create_code,
-            # 보내는 사람
-            "luckguy@B18.com",
-            # 받는 사람
-            [request.data['email']],
-        ).send()
-        return Response(status=status.HTTP_200_OK)
 
 class EmailCert(APIView):
     def post(self,request):
@@ -71,7 +56,6 @@ class ForgotPassword(APIView):
         try:
             # 사용자의 req 의 email을 가져와 user의 email 비교 객체를 가져옴
             user = User.objects.get(email=request.data['email'])
-            print(user, user.create_code, request.data['email'],request.data['code'])
             # user객체의 코드와 사용자의 req의 코드를 비교
             if user.create_code == request.data['code']:
                 user.create_code = user.create_code = str(randint(1,999999)).zfill(6)
@@ -104,6 +88,16 @@ class SignupView(APIView):
         user = UserSerializer(data=request.data)
         user.is_valid(raise_exception=True)
         user.save()
+        EmailMessage(
+            # 제목
+            "시비시비 커뮤니티 회원인증",        
+            # 이메일 내용
+            user.create_code,
+            # 보내는 사람
+            "luckguy@B18.com",
+            # 받는 사람
+            [request.data['email']],
+        ).send()
         return Response({"message":"signup ok"},status=status.HTTP_201_CREATED)
     
 @permission_classes([IsAuthenticatedOrReadOnly])

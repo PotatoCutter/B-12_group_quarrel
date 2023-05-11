@@ -14,7 +14,6 @@ urlpatterns = [
     path('api/token/blacklist/', views.TokenBlacklistView.as_view(),
          name='token_blacklist'),
     # 이메일 보내기 위한 api
-    path('luck/', views.Email.as_view(), name='luck'),
     path('luck/cert/', views.EmailCert.as_view(), name='luck_cert'),
     # 비밀번호
     path('pass/cert/', views.RegenerationCert.as_view(), name='regen_cert'),
