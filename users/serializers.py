@@ -1,3 +1,4 @@
+from random import randint
 from rest_framework import serializers
 from .models import User, Follow
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -25,6 +26,8 @@ class UserSerializer(serializers.ModelSerializer):
         user.age = 0
         password = user.password
         user.set_password(password)
+        # 유저에 처음 가입시 코드 생성
+        user.create_code = str(randint(1,999999)).zfill(6)
         user.save()
         return user
 
