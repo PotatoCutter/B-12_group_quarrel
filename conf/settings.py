@@ -207,6 +207,7 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = "users.User"
 
+CORS_ALLOW_ALL_ORIGINS = True
 # 이메일링 서비스 세팅
 # 계정 불러오기
 host_pass = os.path.join(BASE_DIR, 'email.json')
