@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>SIVIE</title>
+    
+    <!-- static import -->
+    <link rel="stylesheet" href="assets/css/main.css" />
+
+    <!-- * -->
+
+</head>
+
+<body class="homepage is-preload">
+    <div id="page-wrapper">
+        <!-- Header -->
+            <div id="header-wrapper">
+                <div id="header" class="container">
+                    <!-- Nav -->
+                    <nav id="nav">
+                        <ul>
+                            <!-- 카테고리 추가해주시면 됩니다 -->
+                            <li><a href="#">Category</a></li>
+                            <li class="break"><a href="#">Category</a></li>
+                            <!-- Logo -->
+                            <li class="sh_logo"><h1 id="logo"><a href="index.html">SIVIE</a></h1></li>
+                            <li><a href="#">Category</a></li>
+                            <li><a href="#">Category</a></li>
+                            <!-- 비회원은 Login으로, Login 화면에서 signup 버튼 만들기 -->
+                            <li class="sh_mypage">
+                                <a href="#">MyPage</a>
+                                <ul>
+                                    <li><a href="#">NO.1</a></li>
+                                    <li><a href="#">NO.2</a></li>
+                                    <li><a href="#">NO.3</a></li>
+                                    <li>
+                                        <a href="#">더보기</a>
+                                        <ul>
+                                            <li><a href="#">바니</a></li>
+                                            <li><a href="#">당근</a></li>
+                                            <li><a href="#">바니</a></li>
+                                            <li><a href="#">당근</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            {% block content %}
+
+            {% endblock %}
+
+        <!-- Footer -->
+        <div id="footer-wrapper">
+            <ul class="menu" style="display: flex; justify-content: center;">
+                <li>&copy; Untitled. All rights reserved.</li><li>TEAM: <a href="#">SIVIE</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/jquery.dropotron.min.js"></script>
+        <script src="assets/js/browser.min.js"></script>
+        <script src="assets/js/breakpoints.min.js"></script>
+        <script src="assets/js/util.js"></script>
+        <script src="assets/js/main.js"></script>
+
+</body>
+</html>
