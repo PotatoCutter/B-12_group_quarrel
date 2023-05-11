@@ -96,6 +96,7 @@ class ForgotPassword(APIView):
         except:
             return Response({"message":"이메일 인증 실패"},status=status.HTTP_400_BAD_REQUEST)
 
+
 #______ user CRUD ________
 class SignupView(APIView):
     def post(self, request):
@@ -145,7 +146,9 @@ class UserView(APIView):
 #________ follow ____________________
 class FollowView(APIView):
     def post(self, request):
-        serializer = FollowSerializer(data=request.data)
+        follower = request.user # 현재 로그인한 유저
+        follow_data = {'fl': follower.id, 'fw': request.data.get('fw')}
+        serializer = FollowSerializer(data=follow_data)
         if serializer.is_valid():
             serializer.save()
             return Response({"message":"Follow complete:D"}, status=status.HTTP_201_CREATED)
@@ -156,9 +159,16 @@ class FollowView(APIView):
         serializer = FollowViewSerializer(follows, many=True)
         return Response(serializer.data)
     
-    def delete():
-        '''팔로우 삭제'''
-        pass
+    def delete(self, request, user_id):
+        follower_id = request.user.id  # 현재 로그인한 사용자의 ID
+        try:
+            follow = Follow.objects.get(fl_id=follower_id, fw_id=user_id)
+            follow.delete()
+            return Response({"message": "Unfollowed successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except Follow.DoesNotExist:
+            pass
+        return Response({"message":"Follow does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
     
 class FollowersView(APIView):
     def get(self, request, user_id):
@@ -173,3 +183,4 @@ class TokenBlacklistView(APIView):
         token = RefreshToken(request.data.get('refresh'))
         token.blacklist()
         return Response("Success")
+    
