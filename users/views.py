@@ -58,23 +58,8 @@ class ForgotPassword(APIView):
             user = User.objects.get(email=request.data['email'])
             # user객체의 코드와 사용자의 req의 코드를 비교
             if user.create_code == request.data['code']:
-                user.create_code = user.create_code = str(randint(1,999999)).zfill(6)
                 serial = UserForgotPasswordSerializer().password_reset(user)
-                
-                EmailMessage(
-                    # 제목
-                    "시비시비 커뮤니티 새 비밀번호",        
-                    # 이메일 내용
-                    serial.password,
-                    # 보내는 사람
-                    "luckguy@B18.com",
-                    # 받는 사람
-                    [request.data['email']]
-                ).send()
-                
-                serial.set_password(serial.password)
                 serial.save()
-                
                 return Response({"message":"비밀번호 변경 성공"},status=status.HTTP_200_OK)
                 
         except:
@@ -88,16 +73,6 @@ class SignupView(APIView):
         user = UserSerializer(data=request.data)
         user.is_valid(raise_exception=True)
         user.save()
-        EmailMessage(
-            # 제목
-            "시비시비 커뮤니티 회원인증",        
-            # 이메일 내용
-            user.create_code,
-            # 보내는 사람
-            "luckguy@B18.com",
-            # 받는 사람
-            [request.data['email']],
-        ).send()
         return Response({"message":"signup ok"},status=status.HTTP_201_CREATED)
     
 @permission_classes([IsAuthenticatedOrReadOnly])
