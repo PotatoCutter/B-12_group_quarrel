@@ -32,8 +32,8 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class FollowViewSerializer(serializers.ModelSerializer):
-    follow = serializers.CharField(source='fw.name', read_only=True)
-    follower = serializers.CharField(source='fl.name', read_only=True)
+    follow = serializers.CharField(source='fl.name', read_only=True)
+    follower = serializers.CharField(source='fw.name', read_only=True)
     
     class Meta:
         model = Follow

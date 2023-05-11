@@ -92,7 +92,7 @@ class UserView(APIView):
 class FollowView(APIView):
     def post(self, request):
         follower = request.user # 현재 로그인한 유저
-        follow_data = {'fl': follower.id, 'fw': request.data.get('fw')}
+        follow_data = {'fw': follower.id, 'fl': request.data.get('fl')}
         serializer = FollowSerializer(data=follow_data)
         if serializer.is_valid():
             serializer.save()
@@ -100,14 +100,14 @@ class FollowView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request, user_id):
-        follows = Follow.objects.filter(fl_id=user_id)
+        follows = Follow.objects.filter(fw_id=user_id)
         serializer = FollowViewSerializer(follows, many=True)
         return Response(serializer.data)
     
     def delete(self, request, user_id):
         follower_id = request.user.id  # 현재 로그인한 사용자의 ID
         try:
-            follow = Follow.objects.get(fl_id=follower_id, fw_id=user_id)
+            follow = Follow.objects.get(fw_id=follower_id, fl_id=user_id)
             follow.delete()
             return Response({"message": "Unfollowed successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Follow.DoesNotExist:
@@ -117,7 +117,7 @@ class FollowView(APIView):
     
 class FollowersView(APIView):
     def get(self, request, user_id):
-        followers = Follow.objects.filter(fw_id=user_id)
+        followers = Follow.objects.filter(fl_id=user_id)
         serializer = FollowViewSerializer(followers, many=True)
         return Response(serializer.data)    
 #________ btoken __________________
