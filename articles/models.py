@@ -36,16 +36,20 @@ class Comment(models.Model):
 
 
 # 게시글 좋아요
-class Likes(models.Model):
-    likes = models.ManyToManyField(User, related_name="like_articles")
-    pass
-
+class ArticleLikes(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name="해당 게시글")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    article_likes = models.ManyToManyField(User, related_name="article_likes")
+    
 
 # 댓글 좋아요
-class Comment_Likes(models.Model):
-    pass
-
-
+class CommentLikes(models.Model):
+    commment = models.ForeignKey(Comment, on_delete=models.CASCADE, verbose_name="해당 댓글")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment_likes = models.ManyToManyField(User, related_name="comment_likes")
+    
+    
 # 북마크 조회
 class Bookmark(models.Model):
-    pass
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name="제목")    
