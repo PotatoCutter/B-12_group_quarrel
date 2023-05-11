@@ -25,7 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = super().create(validated_data)
-        user.age = 0
+        # user.age = 0
         password = user.password
         user.set_password(password)
         # 유저에 처음 가입시 코드 생성
@@ -77,7 +77,7 @@ class BTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["name"] = user.name
         token["email"] = user.email
         token["gender"] = user.gender
-        token["age"] = user.age
+        # token["age"] = user.age
         token["date_of_birth"] = user.date_of_birth
         
         return token

@@ -165,8 +165,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
-    # "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    # Access token 시간 잠시 늘려놨습니다
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=6000),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -227,9 +227,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'   # 이메일 전�
 EMAIL_HOST = "smtp.gmail.com"   # 이메일 호스트 주소
 EMAIL_PORT = 587                # 이메일 포트번호
 
-
 # 이메일 계정 세팅
-
 EMAIL_HOST_USER = get_secret('HOSTID')    # 보내는 이메일 계정
 EMAIL_HOST_PASSWORD =  get_secret('HOSTPASS')  # 보내는 이메일 계정의 호스트 패스워드
 EMAIL_USE_TLS = True                        # 서버 전송을 위한 보안설정 587 포트에서 사용됨
