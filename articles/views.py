@@ -145,7 +145,6 @@ class BookMarkView(APIView):
         serializer = BookmarkSerializer(bookmark, many=True)
         return Response(serializer.data)        
 
-
 # 내가 쓴 게시글 조회
 class ArticleUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
