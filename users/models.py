@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.core.exceptions import ValidationError
+from random import randint
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, password=None):
@@ -55,10 +56,11 @@ class User(AbstractBaseUser):
     # 프로필 사진 추가 upload_to = STATIC 경로 아래 저장될 폴더명
     profile_photo = models.ImageField("프로필 사진",null=True,blank=True, upload_to='img_prof')
     subscript = models.TextField("자기소개",blank=True,null=True)
+    create_code = models.CharField(max_length=6,null=True,blank=True,)
     
     created = models.DateTimeField("가입 날짜",auto_now_add=True)
 
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
     objects = UserManager()

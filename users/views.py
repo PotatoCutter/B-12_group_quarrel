@@ -5,24 +5,38 @@ from .models import Follow, User
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated 
 from rest_framework.decorators import permission_classes
-from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer
+from .serializers import UserSerializer, FollowSerializer, FollowViewSerializer 
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 
-class Test(APIView):
+class Email(APIView):
     def post(self,request):
+        '''인증메일 전송'''
+        code = User.objects.get(email=request.data['email'])
         EmailMessage(
             # 제목
-            "subject",        
+            "시비시비 커뮤니티 회원인증",        
             # 이메일 내용
-            "content",
+            code.create_code,
             # 보내는 사람
             "luckguy@B18.com",
             # 받는 사람
-            ["insert@email.me"],
+            [request.data['email']],
         ).send()
         return Response(status=status.HTTP_200_OK)
+
+class EmailCert(APIView):
+    def post(self,request):
+        '''이메일 인증'''
+        try:
+            user = User.objects.get(email=request.data['email'])
+            if user.create_code == request.data['code']:
+                user.is_active = True
+                user.save()
+                return Response({"message":"이메일 인증"},status=status.HTTP_200_OK)
+                
+        except:
+            return Response({"message":"이메일 인증 실패"},status=status.HTTP_400_BAD_REQUEST)
 
 #______ user CRUD ________
 class SignupView(APIView):
