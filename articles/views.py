@@ -8,12 +8,26 @@ from articles.serializers import ArticleSerializer, ArticleCreateSerializer, Com
 from django.db.models import Count
 
 
+# 카테고리별 게시글 리스트 페이지네이션(9개씩 게시글 보임)
+from rest_framework.pagination import PageNumberPagination
+from articles.pagination import Pagination
+
+class ArticleListPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
+
 # 카테고리별 메인페이지
-class ArticleListView(APIView):
-    def get(self, request, category_id):
-        articles = Article.objects.filter(category_id=category_id).order_by('-create_at')
-        serializer = ArticleSerializer(articles, many=True)
-        return Response(serializer.data)
+class ArticleListView(APIView, Pagination):
+    pagination_class = ArticleListPagination
+    serializer_class = ArticleSerializer
+
+    def get(self, request, category_id, format=None, *args, **kwargs):
+        articles = Article.objects.filter(category_id=category_id)
+        page = self.paginate_queryset(articles)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(articles, many=True)
+        return Response(serializer.data)       
 
 
 # 카테고리별 게시글 등록
