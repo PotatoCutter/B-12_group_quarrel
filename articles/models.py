@@ -32,7 +32,7 @@ class Comment(models.Model):
     comm_create_at = models.DateTimeField(auto_now_add=True, verbose_name="댓글 작성일시")
     
     def __str__(self):
-        return str(self.comment)
+        return str(self.comm_content)
 
 
 # 게시글 좋아요
