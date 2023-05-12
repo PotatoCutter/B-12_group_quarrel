@@ -5,17 +5,18 @@ from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from articles.models import Categorys, Article, Comment, ArticleLikes, CommentLikes, Bookmark
 from articles.serializers import ArticleSerializer, ArticleCreateSerializer, CommentCreateSerializer, CommentSerializer, BookmarkSerializer
+from django.db.models import Count
 
 
 # 카테고리별 메인페이지
 class ArticleListView(APIView):
     def get(self, request, category_id):
-        articles = Article.objects.filter(category_id=category_id)
+        articles = Article.objects.filter(category_id=category_id).order_by('-create_at')
         serializer = ArticleSerializer(articles, many=True)
         return Response(serializer.data)
 
+    permission_classes = [permissions.IsAuthenticated]
     def post(self, request, category_id):
-        # 로그인 한 유저가 아닐 시 권한없음 else문 필요!
         serializer = ArticleCreateSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save(user=request.user, category_id=category_id)
@@ -23,6 +24,14 @@ class ArticleListView(APIView):
         else:
             print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 게시글 좋아요순
+class ArticleBestListView(APIView):
+    def get(self, request, category_id):
+        articles = Article.objects.filter(category_id=category_id).annotate(like=Count('articlelikes')).order_by('-like')
+        serializer = ArticleSerializer(articles, many=True)
+        return Response(serializer.data)
 
 
 # 게시글 상세페이지
@@ -102,30 +111,32 @@ class CommentDetailView(APIView):
             return Response({"message":"권한이 없습니다"},status=status.HTTP_400_BAD_REQUEST)
     
 
-# 게시글 좋아요 등록, 취소 / 404 오류
-class ArticleLikes(APIView):
+# 게시글 좋아요 등록, 취소
+class ArticleLikesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
-        if request.user in article.user.all():
-            article.likes.remove(request.user)
-            return Response({"message":"좋아요를 취소했습니다"}, status=status.HTTP_200_OK)
-        else:
-            article.likes.add(request.user)
-            return Response({"message":"좋아요를 눌렀습니다"}, status=status.HTTP_200_OK)
+        try:
+            articlelikes = ArticleLikes.objects.get(article=article, user=request.user)
+            articlelikes.delete()
+            return Response({"message": "좋아요를 취소했습니다"}, status=status.HTTP_200_OK)
+        except ArticleLikes.DoesNotExist:
+            articlelikes = ArticleLikes.objects.create(article=article, user=request.user)
+            return Response({"message": "좋아요를 눌렀습니다"}, status=status.HTTP_200_OK)
 
 
-# 댓글 좋아요 등록, 취소 / 404 오류
-class CommentLikes(APIView):
+# 댓글 좋아요 등록, 취소 / 505오류....
+class CommentLikesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, article_id, comment_id):
         comment = get_object_or_404(Comment, id=comment_id)
-        if request.user in comment.user.all():
-            comment.likes.remove(request.user)
-            return Response({"message":"좋아요를 취소했습니다"}, status=status.HTTP_200_OK)
-        else:
-            comment.likes.add(request.user)
-            return Response({"message":"좋아요를 눌렀습니다"}, status=status.HTTP_200_OK)
+        try:
+            commentlikes = CommentLikes.objects.get(comment=comment, user=request.user)
+            commentlikes.delete()
+            return Response({"message": "좋아요를 취소했습니다"}, status=status.HTTP_200_OK)
+        except CommentLikes.DoesNotExist:
+            commentlikes = CommentLikes.objects.create(comment=comment, user=request.user)
+            return Response({"message": "좋아요를 눌렀습니다"}, status=status.HTTP_200_OK)
 
 
 # 북마크 게시글 조회, 등록, 취소
@@ -144,6 +155,7 @@ class BookMarkView(APIView):
         bookmark = Bookmark.objects.filter(user_id=user_id)
         serializer = BookmarkSerializer(bookmark, many=True)
         return Response(serializer.data)        
+
 
 # 내가 쓴 게시글 조회
 class ArticleUserView(APIView):

@@ -61,7 +61,7 @@ class User(AbstractBaseUser):
     
     created = models.DateTimeField("가입 날짜",auto_now_add=True)
 
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
     objects = UserManager()
