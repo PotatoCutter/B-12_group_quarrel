@@ -52,7 +52,7 @@ class User(AbstractBaseUser):
     # 타임존 연/월/일 
     name = models.CharField("사용자 이름",max_length=50)
     date_of_birth = models.DateField("생일",null=True)
-    age = models.IntegerField("나이",null=True, default=0)
+    # age = models.IntegerField("나이",null=True, default=0)
     gender = models.CharField("성별", max_length= 5, choices=GENDER_CHOICES, default="unknown")
     # 프로필 사진 추가 upload_to = STATIC 경로 아래 저장될 폴더명
     profile_photo = models.ImageField("프로필 사진",null=True,blank=True, upload_to='img_prof')
