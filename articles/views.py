@@ -89,13 +89,19 @@ class ArticleDetailView(APIView):
         
 
 # 댓글 조회, 등록
-class CommentView(APIView):
+class CommentView(APIView, Pagination):
+    pagination_class = NineListPagination
+    serializer_class = CommentSerializer
     
     # 댓글 전체조회
     def get(self, request, article_id):
         article = Article.objects.get(id=article_id)
-        comments = article.comment_set.all().order_by('-create_at')
-        serializer = CommentSerializer(comments, many=True)
+        comments = article.comment_set.all().order_by('comm_create_at')
+        page = self.paginate_queryset(comments)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     # 댓글 등록
