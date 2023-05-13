@@ -28,11 +28,11 @@ class Article(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="작성자")
     article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name="해당 게시글")
-    comment = models.CharField(max_length=80, verbose_name="댓글")
+    comm_content = models.CharField(max_length=80, verbose_name="댓글")
     comm_create_at = models.DateTimeField(auto_now_add=True, verbose_name="댓글 작성일시")
     
     def __str__(self):
-        return str(self.comment)
+        return str(self.comm_content)
 
 
 # 게시글 좋아요
