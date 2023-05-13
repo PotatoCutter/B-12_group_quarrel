@@ -8,19 +8,24 @@ from articles.serializers import ArticleSerializer, ArticleCreateSerializer, Com
 from django.db.models import Count
 
 
-# 카테고리별 게시글 리스트 페이지네이션(9개씩 게시글 보임)
+# 글 개수별 페이지네이션 클레스
 from rest_framework.pagination import PageNumberPagination
 from articles.pagination import Pagination
 
-class ArticleListPagination(PageNumberPagination):
-    page_size_query_param = 'limit'
+class NineListPagination(PageNumberPagination):
+    page_size = 9
+
+
+class FourListPagination(PageNumberPagination):
+    page_size = 4
+
 
 # 카테고리별 메인페이지
 class ArticleListView(APIView, Pagination):
-    pagination_class = ArticleListPagination
+    pagination_class = NineListPagination
     serializer_class = ArticleSerializer
 
-    def get(self, request, category_id, format=None, *args, **kwargs):
+    def get(self, request, category_id):
         articles = Article.objects.filter(category_id=category_id)
         page = self.paginate_queryset(articles)
         if page is not None:
@@ -159,8 +164,12 @@ class CommentLikesView(APIView):
 
 
 # 북마크 게시글 조회, 등록, 취소
-class BookMarkView(APIView):
+class BookMarkView(APIView, Pagination):
     permission_classes = [permissions.IsAuthenticated]
+
+    pagination_class = NineListPagination
+    serializer_class = BookmarkSerializer
+
     def post(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         try:
@@ -173,14 +182,26 @@ class BookMarkView(APIView):
 
     def get(self, request, user_id):
         bookmark = Bookmark.objects.filter(user_id=user_id)
-        serializer = BookmarkSerializer(bookmark, many=True)
+        page = self.paginate_queryset(bookmark)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(bookmark, many=True)
         return Response(serializer.data)        
 
 
 # 내가 쓴 게시글 조회
-class ArticleUserView(APIView):
+class ArticleUserView(APIView, Pagination):
     permission_classes = [permissions.IsAuthenticated]
+
+    pagination_class = FourListPagination
+    serializer_class = ArticleSerializer
+
     def get(self, request, user_id):
         articles = Article.objects.filter(user_id=user_id)
-        serializer = ArticleSerializer(articles, many=True)
+        page = self.paginate_queryset(articles)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(articles, many=True)
         return Response(serializer.data)
