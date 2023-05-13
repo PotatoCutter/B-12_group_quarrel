@@ -29,6 +29,9 @@ class ArticleListView(APIView, Pagination):
             serializer = self.serializer_class(articles, many=True)
         return Response(serializer.data)       
 
+
+# 카테고리별 게시글 등록
+class ArticleListCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, category_id):
         serializer = ArticleCreateSerializer(data = request.data)
@@ -40,7 +43,7 @@ class ArticleListView(APIView, Pagination):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 게시글 좋아요순
+# 카테고리별 게시글 좋아요순
 class ArticleBestListView(APIView):
     def get(self, request, category_id):
         articles = Article.objects.filter(category_id=category_id).annotate(like=Count('articlelikes')).order_by('-like')
@@ -50,6 +53,8 @@ class ArticleBestListView(APIView):
 
 # 게시글 상세페이지
 class ArticleDetailView(APIView):
+    
+    # 게시글 상세조회하기
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         serializer = ArticleSerializer(article)
@@ -84,7 +89,7 @@ class CommentView(APIView):
     # 댓글 전체조회
     def get(self, request, article_id):
         article = Article.objects.get(id=article_id)
-        comments = article.comment_set.all()
+        comments = article.comment_set.all().order_by('-create_at')
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -139,7 +144,7 @@ class ArticleLikesView(APIView):
             return Response({"message": "좋아요를 눌렀습니다"}, status=status.HTTP_200_OK)
 
 
-# 댓글 좋아요 등록, 취소 / 505오류....
+# 댓글 좋아요 등록, 취소
 class CommentLikesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, article_id, comment_id):
@@ -155,6 +160,7 @@ class CommentLikesView(APIView):
 
 # 북마크 게시글 조회, 등록, 취소
 class BookMarkView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def post(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         try:
