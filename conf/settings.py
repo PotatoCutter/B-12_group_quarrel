@@ -44,9 +44,12 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # 비밀키 끝 -
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "18.118.215.193/"
+]
 
 
 # Application definition
