@@ -8,13 +8,35 @@ from articles.serializers import ArticleSerializer, ArticleCreateSerializer, Com
 from django.db.models import Count
 
 
-# 카테고리별 메인페이지
-class ArticleListView(APIView):
-    def get(self, request, category_id):
-        articles = Article.objects.filter(category_id=category_id).order_by('-create_at')
-        serializer = ArticleSerializer(articles, many=True)
-        return Response(serializer.data)
+# 글 개수별 페이지네이션 클레스
+from rest_framework.pagination import PageNumberPagination
+from articles.pagination import Pagination
 
+class NineListPagination(PageNumberPagination):
+    page_size = 9
+
+
+class FourListPagination(PageNumberPagination):
+    page_size = 4
+
+
+# 카테고리별 메인페이지
+class ArticleListView(APIView, Pagination):
+    pagination_class = NineListPagination
+    serializer_class = ArticleSerializer
+
+    def get(self, request, category_id):
+        articles = Article.objects.filter(category_id=category_id)
+        page = self.paginate_queryset(articles)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(articles, many=True)
+        return Response(serializer.data)       
+
+
+# 카테고리별 게시글 등록
+class ArticleListCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, category_id):
         serializer = ArticleCreateSerializer(data = request.data)
@@ -26,7 +48,7 @@ class ArticleListView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 게시글 좋아요순
+# 카테고리별 게시글 좋아요순
 class ArticleBestListView(APIView):
     def get(self, request, category_id):
         articles = Article.objects.filter(category_id=category_id).annotate(like=Count('articlelikes')).order_by('-like')
@@ -36,6 +58,8 @@ class ArticleBestListView(APIView):
 
 # 게시글 상세페이지
 class ArticleDetailView(APIView):
+    
+    # 게시글 상세조회하기
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         serializer = ArticleSerializer(article)
@@ -65,13 +89,19 @@ class ArticleDetailView(APIView):
         
 
 # 댓글 조회, 등록
-class CommentView(APIView):
+class CommentView(APIView, Pagination):
+    pagination_class = NineListPagination
+    serializer_class = CommentSerializer
     
     # 댓글 전체조회
     def get(self, request, article_id):
         article = Article.objects.get(id=article_id)
-        comments = article.comment_set.all()
-        serializer = CommentSerializer(comments, many=True)
+        comments = article.comment_set.all().order_by('comm_create_at')
+        page = self.paginate_queryset(comments)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     # 댓글 등록
@@ -125,7 +155,7 @@ class ArticleLikesView(APIView):
             return Response({"message": "좋아요를 눌렀습니다"}, status=status.HTTP_200_OK)
 
 
-# 댓글 좋아요 등록, 취소 / 505오류....
+# 댓글 좋아요 등록, 취소
 class CommentLikesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request, article_id, comment_id):
@@ -140,7 +170,12 @@ class CommentLikesView(APIView):
 
 
 # 북마크 게시글 조회, 등록, 취소
-class BookMarkView(APIView):
+class BookMarkView(APIView, Pagination):
+    permission_classes = [permissions.IsAuthenticated]
+
+    pagination_class = NineListPagination
+    serializer_class = BookmarkSerializer
+
     def post(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         try:
@@ -153,14 +188,26 @@ class BookMarkView(APIView):
 
     def get(self, request, user_id):
         bookmark = Bookmark.objects.filter(user_id=user_id)
-        serializer = BookmarkSerializer(bookmark, many=True)
+        page = self.paginate_queryset(bookmark)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(bookmark, many=True)
         return Response(serializer.data)        
 
 
 # 내가 쓴 게시글 조회
-class ArticleUserView(APIView):
+class ArticleUserView(APIView, Pagination):
     permission_classes = [permissions.IsAuthenticated]
+
+    pagination_class = FourListPagination
+    serializer_class = ArticleSerializer
+
     def get(self, request, user_id):
         articles = Article.objects.filter(user_id=user_id)
-        serializer = ArticleSerializer(articles, many=True)
+        page = self.paginate_queryset(articles)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = self.serializer_class(articles, many=True)
         return Response(serializer.data)
