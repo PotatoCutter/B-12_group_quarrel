@@ -43,7 +43,7 @@ class ArticleLikes(models.Model):
 
 # 댓글 좋아요
 class CommentLikes(models.Model):
-    commment = models.ForeignKey(Comment, on_delete=models.CASCADE, verbose_name="해당 댓글")
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, verbose_name="해당 댓글")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     

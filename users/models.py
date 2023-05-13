@@ -95,7 +95,6 @@ class Follow(models.Model):
     """
     fw = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower', verbose_name='팔로워')
     fl = models.ForeignKey(User,on_delete=models.CASCADE, related_name='follow', verbose_name='팔로우')
-    
   
     class Meta:
         constraints = [

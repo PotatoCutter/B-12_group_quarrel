@@ -73,14 +73,16 @@ class UserForgotPasswordSerializer(serializers.ModelSerializer):
         instance.set_password(temp_pass)
         # instance.save()
         return instance
-
+    
 class FollowViewSerializer(serializers.ModelSerializer):
     follow = serializers.CharField(source='fl.name', read_only=True)
     follower = serializers.CharField(source='fw.name', read_only=True)
+    # followimage = serializers.ImageField(source='fl.profile_photo', read_only=True)
+    # followerimage = serializers.ImageField(source='fw.profile_photo', read_only=True)
     
     class Meta:
         model = Follow
-        fields =['follow','follower']
+        fields =['id','follow','follower']
 
 class FollowSerializer(serializers.ModelSerializer):
     class Meta:
