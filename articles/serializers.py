@@ -8,7 +8,7 @@ class ArticleLikeCountSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArticleLikes
         fields = ['article_likes_count']
-        
+
 
 class BookmarkCountSerializer(serializers.ModelSerializer):
     bookmark_count = serializers.IntegerField(read_only=True)
