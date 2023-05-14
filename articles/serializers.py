@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from articles.models import Article, Comment, Bookmark, ArticleLikes
+from articles.models import Article, Comment, Bookmark, ArticleLikes, CommentLikes
 
 
 class ArticleLikeCountSerializer(serializers.ModelSerializer):
@@ -8,7 +8,7 @@ class ArticleLikeCountSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArticleLikes
         fields = ['article_likes_count']
-        
+
 
 class BookmarkCountSerializer(serializers.ModelSerializer):
     bookmark_count = serializers.IntegerField(read_only=True)
@@ -29,6 +29,10 @@ class ArticleSerializer(serializers.ModelSerializer):
     def get_article_likes_count(self, obj):
         article_likes = ArticleLikes.objects.filter(article=obj).count()
         return article_likes
+    
+    def get_comment_likes_count(self, obj):
+        comment_likes = CommentLikes.objects.filter(comment=obj).count()
+        return comment_likes
     
     def get_bookmark_count(self, obj):
         bookmark_count = Bookmark.objects.filter(article=obj).count()
